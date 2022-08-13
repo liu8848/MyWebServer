@@ -14,6 +14,8 @@ WebServer::WebServer(
     strncat(srcDir_,"/resources/",16);
     HttpConn::userCount=0;
     HttpConn::srcDir=srcDir_;
+
+    //创建数据库连接池并初始化
     SqlConnPool::Instance()->Init("localhost",sqlPort,sqlUser,sqlPwd,dbName,connPoolNum);
 
     InitEventMode_(trigMode);
@@ -171,6 +173,15 @@ void WebServer::OnRead_(HttpConn*client){
     OnProcess(client);
 }
 
+
+void WebServer::OnProcess(HttpConn* client) {
+    if(client->process()) {
+        epoller_->ModFd(client->GetFd(), connEvent_ | EPOLLOUT);
+    } else {
+        epoller_->ModFd(client->GetFd(), connEvent_ | EPOLLIN);
+    }
+}
+
 void WebServer::OnWrite_(HttpConn*client){
     assert(client);
     int ret=-1;
@@ -201,6 +212,7 @@ bool WebServer::InitSocket_(){
     addr.sin_family=AF_INET;
     addr.sin_addr.s_addr=htonl(INADDR_ANY);
     addr.sin_port=htons(port_);
+    //优雅关闭连接
     struct linger optLinger={0};
     if(openLinger_){
         optLinger.l_onoff=1;

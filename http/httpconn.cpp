@@ -52,6 +52,17 @@ int HttpConn::GetPort() const{
     return addr_.sin_port;
 }
 
+ssize_t HttpConn::read(int* saveErrno) {
+    ssize_t len = -1;
+    do {
+        len = readBuff_.ReadFd(fd_, saveErrno);
+        if (len <= 0) {
+            break;
+        }
+    } while (isET);
+    return len;
+}
+
 ssize_t HttpConn::write(int*saveErrno){
     ssize_t len=-1;
     do{

@@ -17,6 +17,7 @@ void SqlConnPool::Init(const char* host,int port,
                     int connSize=0){
 
     assert(connSize>0);
+    //创建指定个数的数据库连接，并将其放入连接池
     for(int i=0;i<connSize;i++){
         MYSQL*sql=nullptr;
         sql=mysql_init(sql);
