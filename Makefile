@@ -10,4 +10,4 @@ all:$(OBJS)
 	$(CXX) $(CFLAGS) $(OBJS) -o $(TARGET) -pthread -lmysqlclient
 
 clean:
-	rm -rf $(OBJS) $(TARGET)
+	rm -rf $(TARGET)

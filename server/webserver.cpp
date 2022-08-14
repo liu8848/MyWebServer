@@ -76,6 +76,7 @@ void WebServer::Start(){
         if(timeoutMS_>0){
             timeMS=timer_->GetNextTick();
         }
+
         int eventCnt=epoller_->Wait(timeMS);
         for(int i=0;i<eventCnt;i++){
             int fd=epoller_->GetEventFd(i);
@@ -240,6 +241,8 @@ bool WebServer::InitSocket_(){
         return false;
     }
 
+    ret=bind(listenFd_,(struct sockaddr*)&addr,sizeof(addr));
+
     ret=listen(listenFd_,6);
     if(ret<0){
         LOG_ERROR("Listen port:%d error!",port_);
@@ -259,6 +262,6 @@ bool WebServer::InitSocket_(){
 }
 
 int WebServer::SetFdNonblock(int fd){
-    assert(fd<0);
+    assert(fd>0);
     return fcntl(fd,F_SETFL,fcntl(fd,F_GETFL,0)|O_NONBLOCK);
 }
